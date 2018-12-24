@@ -20,12 +20,3 @@ class Player:
 
     def move_to_lobby(self):
         self.state = PlayerState.IN_LOBBY
-
-    def _send(self, msg):
-        self.socket.send(msg)
-
-    def send_valid_username(self):
-        self._send(Messages.VALID_USERNAME)
-
-    def send_invalid_username(self):
-        self._send(Messages.INVALID_USERNAME)

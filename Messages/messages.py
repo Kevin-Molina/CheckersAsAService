@@ -9,3 +9,9 @@ class Messages:
     VALID_USERNAME = json.dumps(
         {"usernameValid": True}
     )
+
+    @staticmethod
+    def create_invitation(challenger):
+        return json.dumps(
+            {"challengingPlayer": challenger}
+        )
