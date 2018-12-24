@@ -3,45 +3,40 @@ import json
 import websockets
 
 from Server.server import Server
-from Messages.messages import Messages
+from Player.player import Player, PlayerState
 
 SERVER = Server()
 
 
-async def register(websocket):
-    pass
+async def disconnect(player):
+    SERVER.disconnect_player(player)
+    # Todo - Check if player was in a game
 
 
-async def unregister(websocket):
-    pass
-
-
-async def validate_username(websocket):
-
-    async for message in websocket:
-        data = json.loads(message)
-        print(data)
-        if not data['username']:
-            raise Exception
-        username = data['username']
-
-        if not SERVER.is_username_free(username):
-            return username
-
-        await websocket.send(Messages.INVALID_USERNAME)
-
-
-async def connect(websocket, path):
+async def on_connect(websocket, path):
+    player = Player(websocket)
     try:
-        username = await validate_username(websocket)
-    except:
-        websocket.send()
-    try:
-        async for message in websocket:
+        async for message in player.socket:
             data = json.loads(message)
+
+            if player.state == PlayerState.USERNAME_SELECTION:
+                name = data.get('username', None)
+
+                if SERVER.is_valid_name(name) and SERVER.is_available_name(name):
+                    player.name = name
+                    SERVER.register_player(player)
+                    player.move_to_lobby()
+
+                    await player.send_valid_username()
+                else:
+                    await player.send_invalid_username()
+
+            if player.state == PlayerState.IN_LOBBY:
+                pass
+
     finally:
-        await unregister(websocket)
+        await disconnect(player)
 
 asyncio.get_event_loop().run_until_complete(
-    websockets.serve(connect, 'localhost', 6789))
+    websockets.serve(on_connect, 'localhost', 6789))
 asyncio.get_event_loop().run_forever()
