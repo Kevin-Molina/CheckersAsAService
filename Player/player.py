@@ -4,7 +4,9 @@ class PlayerState:
     USERNAME_SELECTION = 1
     IN_LOBBY = 2
     IN_QUEUE = 3
-    IN_GAME = 4
+    SENDING_CHALLENGE = 4
+    BEING_CHALLENGED = 5
+    IN_GAME = 6
 
 class Player:
 

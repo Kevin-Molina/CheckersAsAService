@@ -5,8 +5,14 @@ import websockets
 from Server.server import Server
 from Player.player import Player, PlayerState
 from Messages.messages import Messages
+from Board.board import Board
 
 SERVER = Server()
+
+b = Board()
+
+print(b.board)
+print([i for i in range(64)])
 
 
 async def disconnect(player):
@@ -43,6 +49,8 @@ async def on_connect(websocket, path):
 
 
 
+
+
     finally:
         print(player.name, end='')
         print(' disconnected')
@@ -51,3 +59,4 @@ async def on_connect(websocket, path):
 asyncio.get_event_loop().run_until_complete(
     websockets.serve(on_connect, 'localhost', 6789))
 asyncio.get_event_loop().run_forever()
+

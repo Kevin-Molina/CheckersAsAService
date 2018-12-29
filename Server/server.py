@@ -1,6 +1,7 @@
 import re
 from Messages.messages import Messages
 
+
 class Server:
 
     def __init__(self):
