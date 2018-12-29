@@ -9,12 +9,6 @@ from Board.board import Board
 
 SERVER = Server()
 
-b = Board()
-
-print(b.board)
-print([i for i in range(64)])
-
-
 async def disconnect(player):
     SERVER.disconnect_player(player)
     # Todo - Check if player was in a game

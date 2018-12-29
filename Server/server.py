@@ -11,7 +11,6 @@ class Server:
     def is_valid_name(self, name):
         if re.match(r'^[a-zA-Z0-9_.-]*$', name):
             return True
-        print('fal')
         return False
 
     def name_in_use(self, name):
