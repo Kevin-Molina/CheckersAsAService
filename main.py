@@ -9,9 +9,11 @@ from Board.board import Board
 
 SERVER = Server()
 
+
 async def disconnect(player):
     SERVER.disconnect_player(player)
     # Todo - Check if player was in a game
+
 
 async def on_connect(websocket, path):
     player = Player(websocket)
@@ -21,18 +23,19 @@ async def on_connect(websocket, path):
             data = json.loads(message)
 
             if player.state == PlayerState.USERNAME_SELECTION:
-                name = data.get('username', None)
 
-                if SERVER.is_valid_name(name) and not SERVER.name_in_use(name):
-                    player.name = name
-                    SERVER.register_player(player)
-                    player.move_to_lobby()
+                if 'username' in data:
+                    name = data['username']
+                    if SERVER.is_valid_name(name) and not SERVER.name_in_use(name):
+                        player.name = name
+                        SERVER.register_player(player)
+                        player.move_to_lobby()
 
-                    await SERVER.send_valid_username(player)
-                else:
-                    await SERVER.send_invalid_username(player)
+                        await SERVER.send_valid_username(player)
+                    else:
+                        await SERVER.send_invalid_username(player)
 
-            if player.state == PlayerState.IN_LOBBY:
+            elif player.state == PlayerState.IN_LOBBY:
 
                 if 'challengePlayer' in data:
                     opponent_name = data['challengePlayer']
@@ -40,6 +43,14 @@ async def on_connect(websocket, path):
                         await SERVER.send_challenge_by_name(player, opponent_name)
                     else:
                         pass
+
+                elif 'joinQueue' in data:
+                    do_join = data['joinQueue']
+                    if do_join:
+                        await SERVER.join_queue(player)
+
+                elif 'leaveQueue' in data:
+                    pass
 
 
 

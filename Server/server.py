@@ -1,6 +1,6 @@
 import re
 from Messages.messages import Messages
-
+from Game.game import Game
 
 class Server:
 
@@ -8,7 +8,8 @@ class Server:
         self._players = {}
         self._queue = None
 
-    def is_valid_name(self, name):
+    @staticmethod
+    def is_valid_name(name):
         if re.match(r'^[a-zA-Z0-9_.-]*$', name):
             return True
         return False
@@ -41,3 +42,25 @@ class Server:
         opponent = self.get_by_name(opponent_name)
         msg = Messages.create_invitation(challenger.name)
         await self._send(opponent.socket, msg)
+
+    async def join_queue(self, player):
+        if not self._queue:
+            self._queue = player
+        else:
+            player_two = self._queue
+            self._queue = None
+            await self._start_game(player, player_two)
+
+    async def _start_game(self, player_one, player_two):
+        game = Game(player_one, player_two)
+        if game.players_turn == player_one:
+
+            player_one_msg = Messages.game_start(player_two.name, True)
+            await self._send(player_one.socket, player_one_msg)
+
+            player_two_msg = Messages.game_start(player_one.name, False)
+            await self._send(player_two.socket, player_two_msg)
+
+
+
+

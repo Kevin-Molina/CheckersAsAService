@@ -1,18 +1,18 @@
 class Checker:
-    BOTTOM = 1
-    TOP = 2
-    BOTTOM_KING = 3
-    TOP_KING = 4
+    PLAYER_ONE = 1
+    PLAYER_TWO = 2
+    PLAYER_ONE_KING = 3
+    PLAYER_TWO_KING = 4
 
-    def __init__(self, type):
-        self.type = type
+    def __init__(self, checker_type):
+        self.type = checker_type
 
     def king(self):
-        if self.type == self.BOTTOM:
-            self.type = self.BOTTOM_KING
-        elif self.type == self.TOP:
-            self.type = self.TOP_KING
+        if self.type == self.PLAYER_ONE:
+            self.type = self.PLAYER_ONE_KING
+        elif self.type == self.PLAYER_TWO:
+            self.type = self.PLAYER_TWO_KING
 
     @property
     def is_king(self):
-        return self.type == self.TOP_KING or self.type == self.TOP_KING
+        return self.type == self.PLAYER_ONE_KING or self.type == self.PLAYER_TWO_KING

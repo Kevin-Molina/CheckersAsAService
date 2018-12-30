@@ -15,3 +15,11 @@ class Messages:
         return json.dumps(
             {"challengingPlayer": challenger}
         )
+
+    @staticmethod
+    def game_start(opponent, first_move):
+        return json.dumps(
+            {"matchStart": True,
+             "opponent": opponent,
+             "firstMove": first_move}
+        )

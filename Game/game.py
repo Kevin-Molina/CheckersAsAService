@@ -1,13 +1,14 @@
 from Board.board import Board
 from Checker.checker import Checker
+import random
 
 
 class Game:
     def __init__(self, player_one, player_two):
         self.board = Board()
-        self.bottom_player = player_one
-        self.top_player = player_two
-        self.players_turn = self.bottom_player
+        self.player_one = player_one
+        self.player_two = player_two
+        self.players_turn = random.choice((self.player_one, self.player_two))
 
     def do_turn(self, player, moves):
         if not player or not moves:
