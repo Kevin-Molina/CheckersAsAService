@@ -4,8 +4,6 @@ import websockets
 
 from Server.server import Server
 from Player.player import Player, PlayerState
-from Messages.messages import Messages
-from Board.board import Board
 
 SERVER = Server()
 
@@ -29,7 +27,6 @@ async def on_connect(websocket, path):
                     if SERVER.is_valid_name(name) and not SERVER.name_in_use(name):
                         player.name = name
                         SERVER.register_player(player)
-                        player.move_to_lobby()
 
                         await SERVER.send_valid_username(player)
                     else:
@@ -50,15 +47,9 @@ async def on_connect(websocket, path):
                         await SERVER.join_queue(player)
 
                 elif 'leaveQueue' in data:
-                    pass
-
-
-
-
+                    SERVER.leave_queue(player)
 
     finally:
-        print(player.name, end='')
-        print(' disconnected')
         await disconnect(player)
 
 asyncio.get_event_loop().run_until_complete(

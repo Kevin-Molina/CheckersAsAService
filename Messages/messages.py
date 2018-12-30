@@ -10,6 +10,14 @@ class Messages:
         {"usernameValid": True}
     )
 
+    ESTIMATED_WAIT_TIME = json.dumps(
+        {"estimatedWait": "< 1 minute"}
+    )
+
+    OPPONENT_DISCONNECTED = json.dumps(
+        {"opponentDisconnected": True}
+    )
+
     @staticmethod
     def create_invitation(challenger):
         return json.dumps(

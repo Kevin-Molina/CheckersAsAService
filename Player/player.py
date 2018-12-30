@@ -20,5 +20,3 @@ class Player:
     def lower_name(self):
         return self.name.lower()
 
-    def move_to_lobby(self):
-        self.state = PlayerState.IN_LOBBY
