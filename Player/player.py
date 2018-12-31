@@ -1,5 +1,3 @@
-from Messages.messages import Messages
-
 class PlayerState:
     USERNAME_SELECTION = 1
     IN_LOBBY = 2
@@ -7,6 +5,7 @@ class PlayerState:
     SENDING_CHALLENGE = 4
     BEING_CHALLENGED = 5
     IN_GAME = 6
+
 
 class Player:
 
