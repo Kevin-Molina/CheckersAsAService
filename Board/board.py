@@ -70,7 +70,7 @@ class Board:
         # Verify movement directions are permitted
         if end-start > 0 and start_piece.type == Checker.PLAYER_TWO:
             return False
-g
+
         if end-start < 0 and start_piece.type == Checker.PLAYER_ONE:
             return False
 
