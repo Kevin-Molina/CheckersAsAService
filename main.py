@@ -9,7 +9,7 @@ SERVER = Server()
 
 
 async def disconnect(player):
-    SERVER.disconnect_player(player)
+    await SERVER.disconnect_player(player)
     # Todo - Check if player was in a game
 
 
@@ -48,7 +48,11 @@ async def on_connect(websocket, path):
 
                 elif 'leaveQueue' in data:
                     SERVER.leave_queue(player)
+            elif player.state == PlayerState.IN_GAME:
 
+                if 'move' in data:
+                    move = data['move']
+                    await SERVER.handle_turn(player, move)
     finally:
         await disconnect(player)
 

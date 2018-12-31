@@ -57,10 +57,19 @@ class Server:
     async def send_estimated_wait_time(self, player):
         await self._send(player.socket, Messages.ESTIMATED_WAIT_TIME)
 
+    async def send_invalid_move(self, player, error_msg):
+        msg = Messages.invalid_move(error_msg)
+        await self._send(player.socket, error_msg)
+
+    async def send_valid_move(self, player):
+        await self._send(player.socket, Messages.VALID_MOVE)
+
+    async def send_move(self,player, move):
+        await self._send(player.socket, Messages.move(move))
+
     async def opponent_disconnected(self, player):
         player.state = PlayerState.IN_LOBBY
         await self._send(player.socket, Messages.OPPONENT_DISCONNECTED)
-
 
     def leave_queue(self, player):
         if self._queue is player:
@@ -105,6 +114,18 @@ class Server:
             player_two_msg = Messages.game_start(player_one.name, True)
             await self._send(player_two.socket, player_two_msg)
 
+    async def handle_turn(self, player, move):
+        game = player.game
+        for i in game.board.board:
+            print(i)
+        try:
+            game.do_turn(player, move)
+        except Exception as e:
+            await self.send_invalid_move(player, str(e))
+        else:
+            opponent = game.get_opponent(player)
+            await self.send_move(opponent, move)
+            await self.send_valid_move(player)
 
 
 

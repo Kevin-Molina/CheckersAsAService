@@ -4,25 +4,49 @@ import random
 
 
 class Game:
-    def __init__(self, player_one, player_two):
+    def __init__(self, player_a, player_b):
+        """Randomly pick a player to start as player_one that makes the first move
+        By default, player_one starts at the bottom of the board"""
         self.board = Board()
-        self.player_one = player_one
-        self.player_two = player_two
-        self.players_turn = random.choice((self.player_one, self.player_two))
+        self.players_turn = random.choice((player_a, player_b))
+        if self.players_turn is player_a:
+            self.player_one = player_a
+            self.player_two = player_b
+        else:
+            self.player_one = player_b
+            self.player_two = player_a
 
-    def do_turn(self, player, moves):
-        if not player or not moves:
-            # error
-            pass
+    def do_turn(self, player, move):
+        if not player or not move:
+            raise Exception('Invalid move format')
+
+        for i in move:
+            print(type(i))
+            if type(i) is not int:
+                raise Exception('Invalid move format - Must be integers')
 
         if self.players_turn != player:
-            # error
-            pass
+            raise Exception('Player can only move on turn')
 
-        for i in moves:
-            if i is not int:
-                # error
-                pass
+        if player == self.player_one:
+            if not self.board.player_owns_piece(move[0], [Checker.PLAYER_ONE, Checker.PLAYER_ONE_KING]):
+                raise Exception('Player can only move their own piece')
 
-    def _move(self, start, end):
-        pass
+        elif not self.board.player_owns_piece(move[0], [Checker.PLAYER_TWO, Checker.PLAYER_TWO_KING]):
+            raise Exception('Player can only move their own piece')
+
+        if not self.board.is_valid_move(move):
+            raise Exception('Invalid move')
+
+        else:
+            if player == self.player_one:
+                self.players_turn = self.player_two
+            else:
+                self.players_turn = self.player_one
+            self.board.move(move)
+
+    def get_opponent(self, player):
+        if player == self.player_one:
+            return self.player_two
+        else:
+            return self.player_one

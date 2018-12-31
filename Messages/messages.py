@@ -18,6 +18,10 @@ class Messages:
         {"opponentDisconnected": True}
     )
 
+    VALID_MOVE = json.dumps(
+        {"validMove": True}
+    )
+
     @staticmethod
     def create_invitation(challenger):
         return json.dumps(
@@ -30,4 +34,16 @@ class Messages:
             {"matchStart": True,
              "opponent": opponent,
              "firstMove": first_move}
+        )
+
+    @staticmethod
+    def invalid_move(error_msg):
+        return json.dumps(
+            {"moveError": error_msg}
+        )
+
+    @staticmethod
+    def move(move):
+        return json.dumps(
+            {"move": move}
         )
