@@ -12,10 +12,11 @@ class Server:
 
     @staticmethod
     def is_valid_name(name):
-        if re.match(r'^[a-zA-Z0-9_.-]*$', name):
+        if re.match(r'^[a-zA-Z0-9_.-]{1,20}$', name):
+            print('true')
             return True
         return False
-
+        print('false')
     def name_in_use(self, name):
         return name.lower() in self._players
 
@@ -37,7 +38,7 @@ class Server:
             self._queue = None
 
     def get_by_name(self, name):
-        return self._players.get(name, None)
+        return self._players.get(name.lower(), None)
 
     async def _send(self, socket, msg):
         await socket.send(msg)
