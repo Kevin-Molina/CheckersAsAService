@@ -13,10 +13,8 @@ class Server:
     @staticmethod
     def is_valid_name(name):
         if re.match(r'^[a-zA-Z0-9_.-]{1,20}$', name):
-            print('true')
             return True
         return False
-        print('false')
     def name_in_use(self, name):
         return name.lower() in self._players
 
@@ -81,17 +79,14 @@ class Server:
             pass
 
         elif not self._queue:
-            print(player.name, "has joined")
             self._queue = player
             await self.send_estimated_wait_time(player)
         else:
-            print('else')
             player_two = self._queue
             self._queue = None
             await self._start_game(player, player_two)
 
     async def _start_game(self, player_one, player_two):
-        print('started')
         game = Game(player_one, player_two)
 
         player_one.state = PlayerState.IN_GAME
@@ -116,8 +111,7 @@ class Server:
 
     async def handle_turn(self, player, move):
         game = player.game
-        for i in game.board.board:
-            print(i)
+
         try:
             game.do_turn(player, move)
         except Exception as e:

@@ -64,13 +64,13 @@ class Board:
         # End is not empty
         if temp_board[end]:
             return False
-        print('hit1')
+
         start_piece = temp_board[start]
 
         # Verify movement directions are permitted
         if end-start > 0 and start_piece.type == Checker.PLAYER_TWO:
             return False
-
+g
         if end-start < 0 and start_piece.type == Checker.PLAYER_ONE:
             return False
 

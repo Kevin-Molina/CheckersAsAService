@@ -21,7 +21,6 @@ class Game:
             raise Exception('Invalid move format')
 
         for i in move:
-            print(type(i))
             if type(i) is not int:
                 raise Exception('Invalid move format - Must be integers')
 
