@@ -3,50 +3,39 @@ from copy import deepcopy
 
 
 class Board:
+    PLAYER_ONE_ROW_STARTS = [0, 9, 18]
+    PLAYER_TWO_ROW_STARTS = [41, 48, 57]
+
+    # [00, 01, 02, 03, 04, 05, 06, 07]
+    # [08, 09, 10, 11, 12, 13, 14, 15]
+    # [16, 17, 18, 19, 20, 21, 22, 23]
+    # [24, 25, 26, 27, 28, 29, 30, 31]
+    # [32, 33, 34, 35, 36, 37, 38, 39]
+    # [40, 41, 42, 43, 44, 45, 46, 47]
+    # [48, 49, 50, 51, 52, 53, 54, 55]
+    # [56, 57, 58, 59, 60, 61, 62, 63]
+
     def __init__(self):
         self.board = self._get_new_board()
 
-    @staticmethod
-    def _get_new_board():
+    def _get_new_board(self):
         """Creates an empty board 3 rows at a time"""
         board = [None for _ in range(64)]
-        player_one_index = 0
-        player_two_index = 41
-        for _ in range(4):
-            board[player_one_index] = Checker(Checker.PLAYER_ONE)
-            board[player_two_index] = Checker(Checker.PLAYER_TWO)
-            player_one_index += 2
-            player_two_index += 2
 
-        player_one_index = 9
-        player_two_index = 48
-        for _ in range(4):
-            board[player_one_index] = Checker(Checker.PLAYER_ONE)
-            board[player_two_index] = Checker(Checker.PLAYER_TWO)
-            player_one_index += 2
-            player_two_index += 2
+        for board_index in self.PLAYER_ONE_ROW_STARTS:
+            self._set_row(board, board_index, Checker.PLAYER_ONE)
 
-        player_one_index = 16
-        player_two_index = 57
-        for _ in range(4):
-            board[player_one_index] = Checker(Checker.PLAYER_ONE)
-            board[player_two_index] = Checker(Checker.PLAYER_TWO)
-            player_one_index += 2
-            player_two_index += 2
+        for board_index in self.PLAYER_TWO_ROW_STARTS:
+            self._set_row(board, board_index, Checker.PLAYER_TWO)
 
         return board
 
-    # [56, 57, 58, 59, 60, 61, 62, 63]
-    # [48, 49, 50, 51, 52, 53, 54, 55]
-    # [40, 41, 42, 43, 44, 45, 46, 47]
-    # [32, 33, 34, 35, 36, 37, 38, 39]
-    # [24, 25, 26, 27, 28, 29, 30, 31]
-    # [16, 17, 18, 19, 20, 21, 22, 23]
-    # [08, 09, 10, 11, 12, 13, 14, 15]
-    # [00, 01, 02, 03, 04, 05, 06, 07]
+    @staticmethod
+    def _set_row(board, start_index, piece):
+        board[start_index:start_index + 8:2] = [Checker(piece) for _ in range(4)]
 
-    def player_owns_piece(self, index, checker_types):
-        return self.board[index].type in checker_types
+    def player_owns_piece(self, index, player_number):
+        return self.board[index].player_number == player_number
 
     def _get_board_clone(self):
         return deepcopy(self.board)
@@ -113,19 +102,19 @@ class Board:
             board[start] = None
 
     def is_valid_move(self, move_list):
-
         temp_board = self._get_board_clone()
 
-        for i in range(len(move_list) - 1):
-            if not self._is_valid_single_move(move_list[i], move_list[i+1], temp_board):
+        for move_pair in move_list:
+            if not self.is_valid_move(move_pair[0], move_pair[1], temp_board):
                 return False
             else:
-                self._make_single_move(move_list[i], move_list[i+1], temp_board)
+                self._make_single_move(move_list[0], move_list[1], temp_board)
         return True
 
     def move(self, move_list):
-        for i in range(len(move_list)-1):
-            self._make_single_move(move_list[i], move_list[i+1], self.board)
+        for move_pair in move_list:
+            self._make_single_move(move_pair[0], move_pair[1], self.board)
+
 
 
 

@@ -2,6 +2,7 @@ import re
 from Messages.messages import Messages
 from Game.game import Game
 from Player.player import PlayerState
+import logging
 
 
 class Server:
@@ -40,6 +41,7 @@ class Server:
 
     async def _send(self, socket, msg):
         await socket.send(msg)
+        logging.info(msg)
 
     async def send_valid_username(self, player):
         await self._send(player.socket, Messages.VALID_USERNAME)
@@ -57,7 +59,7 @@ class Server:
 
     async def send_invalid_move(self, player, error_msg):
         msg = Messages.invalid_move(error_msg)
-        await self._send(player.socket, error_msg)
+        await self._send(player.socket, msg)
 
     async def send_valid_move(self, player):
         await self._send(player.socket, Messages.VALID_MOVE)

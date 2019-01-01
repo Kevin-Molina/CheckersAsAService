@@ -8,11 +8,13 @@ class Checker:
         self.type = checker_type
 
     def king(self):
-        if self.type == self.PLAYER_ONE:
-            self.type = self.PLAYER_ONE_KING
-        elif self.type == self.PLAYER_TWO:
-            self.type = self.PLAYER_TWO_KING
+        if self.type <= 2:
+            self.type += 2
 
     @property
     def is_king(self):
-        return self.type == self.PLAYER_ONE_KING or self.type == self.PLAYER_TWO_KING
+        return self.type > 2
+
+    @property
+    def player_number(self):
+        return self.type if self.type <= 2 else self.type - 2
