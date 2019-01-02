@@ -40,27 +40,26 @@ class Board:
     def _get_board_clone(self):
         return deepcopy(self.board)
 
-    @staticmethod
-    def _is_valid_single_move(start, end, temp_board):
+    def _is_valid_single_move(self, start, end):
 
         # Indices not in bounds
-        if start < 0 or start >= len(temp_board):
+        if start < 0 or start >= len(self.board):
             return False
 
-        if end < 0 or end >= len(temp_board):
+        if end < 0 or end >= len(self.board):
             return False
 
         # End is not empty
-        if temp_board[end]:
+        if self.board[end]:
             return False
 
-        start_piece = temp_board[start]
+        start_piece = self.board[start]
 
         # Verify movement directions are permitted
-        if end-start > 0 and start_piece.type == Checker.PLAYER_TWO:
+        if end-start > 0 and start_piece.type == Checker.PLAYER_ONE:
             return False
 
-        if end-start < 0 and start_piece.type == Checker.PLAYER_ONE:
+        if end-start < 0 and start_piece.type == Checker.PLAYER_TWO:
             return False
 
         dif = abs(end-start)
@@ -72,49 +71,51 @@ class Board:
         # Double hop diagonal move
         if dif in [14, 18]:
             midpoint = (start + end) // 2
-            mid_piece = temp_board[midpoint]
+            mid_piece = self.board[midpoint]
 
             # Verify the hopped piece is of opposite color
-            if start_piece.type == Checker.PLAYER_ONE or start_piece.type == Checker.PLAYER_ONE_KING:
-                if mid_piece.type != Checker.PLAYER_TWO or mid_piece.type == Checker.PLAYER_TWO_KING:
-                    return False
-
-            if start_piece.type == Checker.PLAYER_TWO or start_piece.type == Checker.PLAYER_TWO_KING:
-                if mid_piece.type != Checker.PLAYER_ONE or mid_piece.type != Checker.PLAYER_ONE_KING:
-                    return False
-
-            return True
+            if start_piece.player_number != mid_piece.player_number:
+                return True
+            else:
+                return False
 
         else:
             return False
 
-    @staticmethod
-    def _make_single_move(start, end, board):
+    def _make_single_move(self, start, end):
         dif = abs(end-start)
 
         if dif in [7, 9]:
-            board[end] = board[start]
-            board[start] = None
+            self.board[end] = self.board[start]
+            self.board[start] = None
         else:
             midpoint = (start + end) // 2
-            board[end] = board[start]
-            board[midpoint] = None
-            board[start] = None
+            self.board[end] = self.board[start]
+            self.board[midpoint] = None
+            self.board[start] = None
 
-    def is_valid_move(self, move_list):
-        temp_board = self._get_board_clone()
+        self._king_if_needed(end)
 
-        for move_pair in move_list:
-            if not self.is_valid_move(move_pair[0], move_pair[1], temp_board):
-                return False
-            else:
-                self._make_single_move(move_list[0], move_list[1], temp_board)
-        return True
+    def _king_if_needed(self, piece_index):
+        checker = self.board[piece_index]
+
+        if 0 >= piece_index <= 7 and checker.type == Checker.PLAYER_ONE:
+            checker.king()
+        elif 56 >= piece_index <= 63 and checker.type == Checker.PLAYER_TWO:
+            checker.king()
 
     def move(self, move_list):
+        backup_board = self._get_board_clone()
+        invalid_move_found = False
         for move_pair in move_list:
+            invalid_move_found = self._is_valid_single_move(move_pair[0], move_pair[1])
+            if invalid_move_found:
+                break
             self._make_single_move(move_pair[0], move_pair[1], self.board)
 
+        if invalid_move_found:
+            self.board = backup_board
+            raise Exception
 
 
 

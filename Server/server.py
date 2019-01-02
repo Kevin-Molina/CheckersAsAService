@@ -57,9 +57,8 @@ class Server:
     async def send_estimated_wait_time(self, player):
         await self._send(player.socket, Messages.ESTIMATED_WAIT_TIME)
 
-    async def send_invalid_move(self, player, error_msg):
-        msg = Messages.invalid_move(error_msg)
-        await self._send(player.socket, msg)
+    async def send_invalid_move(self, player):
+        await self._send(player.socket, Messages.INVALID_MOVE)
 
     async def send_valid_move(self, player):
         await self._send(player.socket, Messages.VALID_MOVE)
@@ -116,8 +115,8 @@ class Server:
 
         try:
             game.do_turn(player, move)
-        except Exception as e:
-            await self.send_invalid_move(player, str(e))
+        except:
+            await self.send_invalid_move(player)
         else:
             opponent = game.get_opponent(player)
             await self.send_move(opponent, move)

@@ -12,14 +12,14 @@ class Game:
 
     def do_turn(self, player, move):
         if not player or not move:
-            raise Exception('Invalid move format')
+            raise Exception
 
         for i in move:
             if type(i) is not int:
-                raise Exception('Invalid move format - Must be integers')
+                raise Exception
 
         if self.players_turn != player:
-            raise Exception('Player can only move on turn')
+            raise Exception
 
         start_location = move[0]
 
@@ -27,20 +27,22 @@ class Game:
         player_number = self.players.index(player) + 1
 
         if not self.board.player_owns_piece(start_location, player_number):
-            raise Exception('Player can only move their own piece')
+            raise Exception
 
         formatted_move = self._get_formatted_move(move)
 
         if not self.board.is_valid_move(formatted_move):
-            raise Exception('Invalid move')
+            raise Exception
 
-        else:
-            if player == self.player_one:
-                self.players_turn = self.player_two
-            else:
-                self.players_turn = self.player_one
-
+        try:
             self.board.move(formatted_move)
+        except:
+            raise Exception
+
+        if self.players_turn == self.players[0]:
+            self.players_turn = self.players[1]
+        else:
+            self.players_turn = self.players[0]
 
     def get_opponent(self, player):
         if player == self.player_one:

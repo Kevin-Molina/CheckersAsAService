@@ -22,6 +22,10 @@ class Messages:
         {"validMove": True}
     )
 
+    INVALID_MOVE = json.dumps(
+        {"validMove": False}
+    )
+
     @staticmethod
     def create_invitation(challenger):
         return json.dumps(
@@ -36,11 +40,6 @@ class Messages:
              "firstMove": first_move}
         )
 
-    @staticmethod
-    def invalid_move(error_msg):
-        return json.dumps(
-            {"moveError": error_msg}
-        )
 
     @staticmethod
     def move(move):
