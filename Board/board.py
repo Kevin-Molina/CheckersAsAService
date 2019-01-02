@@ -107,6 +107,7 @@ class Board:
     def move(self, move_list):
         backup_board = self._get_board_clone()
         invalid_move_found = False
+
         for move_pair in move_list:
             invalid_move_found = self._is_valid_single_move(move_pair[0], move_pair[1])
             if invalid_move_found:
@@ -117,6 +118,32 @@ class Board:
             self.board = backup_board
             raise Exception
 
+    def _has_moves_left(self, checker_type):
+        has_move_left = False
 
+        for idx, checker in enumerate(self.board):
+            if checker.type == checker_type and self._get_valid_moves(idx):
+                has_move_left = True
+                break
+        return has_move_left
 
+    def _get_valid_moves(self, checker_index):
+        valid_moves = []
+        if self._is_valid_single_move(checker_index, checker_index + 7):
+            valid_moves.append((checker_index, checker_index + 7))
+        if self._is_valid_single_move(checker_index, checker_index - 7):
+            valid_moves.append((checker_index, checker_index - 7))
+        if self._is_valid_single_move(checker_index, checker_index + 9):
+            valid_moves.append((checker_index, checker_index + 9))
+        if self._is_valid_single_move(checker_index, checker_index - 9):
+            valid_moves.append((checker_index, checker_index - 9))
+        if self._is_valid_single_move(checker_index, checker_index + 14):
+            valid_moves.append((checker_index, checker_index + 14))
+        if self._is_valid_single_move(checker_index, checker_index - 14):
+            valid_moves.append((checker_index, checker_index - 14))
+        if self._is_valid_single_move(checker_index, checker_index + 18):
+            valid_moves.append((checker_index, checker_index + 18))
+        if self._is_valid_single_move(checker_index, checker_index - 18):
+            valid_moves.append((checker_index, checker_index - 18))
 
+        return valid_moves
