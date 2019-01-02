@@ -111,7 +111,7 @@ class Board:
             invalid_move_found = self._is_valid_single_move(move_pair[0], move_pair[1])
             if invalid_move_found:
                 break
-            self._make_single_move(move_pair[0], move_pair[1], self.board)
+            self._make_single_move(move_pair[0], move_pair[1])
 
         if invalid_move_found:
             self.board = backup_board
