@@ -17,6 +17,8 @@ class Board:
 
     def __init__(self):
         self.board = self._get_new_board()
+        self.player_one_checker_count = 12
+        self.player_two_checker_count = 12
 
     def _get_new_board(self):
         """Creates an empty board 3 rows at a time"""
@@ -106,6 +108,8 @@ class Board:
 
     def move(self, move_list):
         backup_board = self._get_board_clone()
+        backup_p1_checker_count = self.player_one_checker_count
+        backup_p2_checker_count = self.player_one_checker_count
         invalid_move_found = False
 
         for move_pair in move_list:
@@ -116,6 +120,8 @@ class Board:
 
         if invalid_move_found:
             self.board = backup_board
+            self.player_one_checker_count = backup_p1_checker_count
+            self.player_two_checker_count = backup_p2_checker_count
             raise Exception
 
     def _has_moves_left(self, checker_type):
