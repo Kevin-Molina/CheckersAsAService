@@ -6,6 +6,12 @@ import logging
 from Server.server import Server
 from Player.player import Player, PlayerState
 
+SERVER_IP = 'localhost'
+SERVER_PORT = 6789
+LOGFILE = "log.txt"
+Server = Server(SERVER_IP, SERVER_PORT, LOGFILE)
+Server.run()
+
 
 async def disconnect(player):
     await SERVER.disconnect_player(player)
@@ -56,9 +62,4 @@ async def on_connect(websocket, path):
     finally:
         await disconnect(player)
 
-logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
 SERVER = Server()
-
-asyncio.get_event_loop().run_until_complete(
-    websockets.serve(on_connect, 'localhost', 6789))
-asyncio.get_event_loop().run_forever()

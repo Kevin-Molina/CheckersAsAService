@@ -44,11 +44,15 @@ class Game:
         else:
             self.players_turn = self.players[0]
 
+    def get_prev_move_winner_or_none(self):
+        if self.players_turn == self.players[0]:
+            board.
+
     def get_opponent(self, player):
-        if player == self.player_one:
-            return self.player_two
+        if player == self.players[0]:
+            return self.players[1]
         else:
-            return self.player_one
+            return self.players[0]
 
     @staticmethod
     def _get_formatted_move(move):

@@ -1,23 +1,77 @@
 import re
 from Messages.messages import Messages
 from Game.game import Game
-from Player.player import PlayerState
+from Player.player import PlayerState, Player
+import asyncio
+import websockets
+import json
 import logging
 
 
 class Server:
+    LOGFILE = 'log.txt'
 
-    def __init__(self):
+    def __init__(self, ip, port):
+        logging.basicConfig(format='%(asctime)s %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            level=logging.INFO,
+                            filename=self.LOGFILE)
         self._players = {}
         self._queue = None
+        self.ip = ip
+        self.port = port
 
-    @staticmethod
-    def is_valid_name(name):
-        if re.match(r'^[a-zA-Z0-9_.-]{1,20}$', name):
-            return True
-        return False
-    def name_in_use(self, name):
-        return name.lower() in self._players
+    def run(self, ip, port):
+        asyncio.get_event_loop().run_until_complete(
+            websockets.serve(self._dispatcher, ip, port))
+        asyncio.get_event_loop().run_forever()
+
+    async def _dispatcher(self, websocket, path):
+        player = Player(websocket)
+
+        try:
+            async for message in player.socket:
+                data = json.loads(message)
+
+                if player.state == PlayerState.USERNAME_SELECTION:
+
+                    if 'username' in data:
+                        name = data['username']
+                        if self._is_valid_name(name):
+                            player.name = name
+                            self.register_player(player)
+
+                            await self.send_valid_username(player)
+                        else:
+                            await self.send_invalid_username(player)
+
+                elif player.state == PlayerState.IN_LOBBY:
+
+                    if 'challengePlayer' in data:
+                        opponent_name = data['challengePlayer']
+                        if self.name_in_use(opponent_name) and opponent_name.lower() != player.lower_name:
+                            await self.send_challenge_by_name(player, opponent_name)
+                        else:
+                            pass
+
+                    elif 'joinQueue' in data:
+                        do_join = data['joinQueue']
+                        if do_join:
+                            await self.join_queue(player)
+
+                    elif 'leaveQueue' in data:
+                        self.leave_queue(player)
+                elif player.state == PlayerState.IN_GAME:
+
+                    if 'move' in data:
+                        move = data['move']
+                        await self.handle_turn(player, move)
+
+        finally:
+            await self.disconnect_player(player)
+
+    def _is_valid_name(self, name):
+        return re.match(r'^[a-zA-Z0-9_.-]{1,20}$', name) and name.lower() not in self._players
 
     def register_player(self, player):
         self._players[player.lower_name] = player
@@ -119,8 +173,11 @@ class Server:
             await self.send_invalid_move(player)
         else:
             opponent = game.get_opponent(player)
+            winner = game.get_winner_or_none()
             await self.send_move(opponent, move)
             await self.send_valid_move(player)
+
+
 
 
 
