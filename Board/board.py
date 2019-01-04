@@ -42,6 +42,10 @@ class Board:
     def _get_board_clone(self):
         return deepcopy(self.board)
 
+    def _get_checker_row(self, index):
+        return index // 8
+
+
     def _is_valid_single_move(self, start, end):
 
         # Indices not in bounds
@@ -68,12 +72,19 @@ class Board:
 
         # Single hop diagonal move
         if dif in [7, 9]:
+            # Prevent movement wrapping around the sides
+            if abs(self._get_checker_row(start) - self._get_checker_row(end)) != 1:
+                return False
             return True
 
         # Double hop diagonal move
         if dif in [14, 18]:
             midpoint = (start + end) // 2
             mid_piece = self.board[midpoint]
+
+            # Prevent movement wrapping around the sides
+            if abs(self._get_checker_row(start) - self._get_checker_row(end)) != 2:
+                return False
 
             # Verify the hopped piece is of opposite color
             if start_piece.player_number != mid_piece.player_number:
