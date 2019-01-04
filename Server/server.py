@@ -32,7 +32,7 @@ class Server:
         try:
             async for message in player.socket:
                 data = json.loads(message)
-                logging.info(self.MSG_RECEIVED + data)
+                logging.info(self.MSG_RECEIVED + message)
 
                 if player.state == PlayerState.USERNAME_SELECTION:
 
@@ -83,10 +83,9 @@ class Server:
 
         if player.state == PlayerState.IN_GAME:
             game = player.game
-            if game.player_one is player:
-                await self.opponent_disconnected(game.player_two)
-            else:
-                await self.opponent_disconnected(game.player_one)
+            opponent = game.get_opponent(player)
+            opponent.state = PlayerState.IN_LOBBY
+            await self.send_opponent_disconnected(opponent)
 
         elif self._queue is player:
             self._queue = None
@@ -124,8 +123,7 @@ class Server:
     async def send_winner(self, player, winner_name):
         await self._send(player.socket, Messages.winnner(winner_name))
 
-    async def opponent_disconnected(self, player):
-        player.state = PlayerState.IN_LOBBY
+    async def send_opponent_disconnected(self, player):
         await self._send(player.socket, Messages.OPPONENT_DISCONNECTED)
 
     def leave_queue(self, player):

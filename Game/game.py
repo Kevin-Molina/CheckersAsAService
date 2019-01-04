@@ -7,8 +7,12 @@ class Game:
         """Randomly pick a player to start as player_one that makes the first move
         By default, player_one starts at the bottom of the board"""
         self.board = Board()
-        self.players = random.shuffle([player_a, player_b])
+        self.players = [player_a, player_b]
+        random.shuffle(self.players)
         self.players_turn = self.players[0]
+
+    def _get_player_num(self, player):
+        return self.players.index(player) + 1
 
     def do_turn(self, player, move):
         if not player or not move:
@@ -24,15 +28,12 @@ class Game:
         start_location = move[0]
 
         # Player[0] is (player 1)
-        player_number = self.players.index(player) + 1
+        player_number = self._get_player_num(player)
 
         if not self.board.player_owns_piece(start_location, player_number):
             raise Exception
 
         formatted_move = self._get_formatted_move(move)
-
-        if not self.board.is_valid_move(formatted_move):
-            raise Exception
 
         try:
             self.board.move(formatted_move)
@@ -46,7 +47,7 @@ class Game:
 
     def player_has_won(self, player):
         opponent = self.get_opponent(player)
-        return not self.board.has_moves_left(self.players.index(opponent))
+        return not self.board.has_moves_left(self._get_player_num(opponent))
 
     def get_opponent(self, player):
         if player == self.players[0]:

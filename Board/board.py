@@ -3,8 +3,8 @@ from copy import deepcopy
 
 
 class Board:
-    PLAYER_ONE_ROW_STARTS = [0, 9, 16]
-    PLAYER_TWO_ROW_STARTS = [41, 48, 57]
+    PLAYER_ONE_ROW_STARTS = [40, 49, 56]
+    PLAYER_TWO_ROW_STARTS = [1, 8, 17]
 
     # [00, 01, 02, 03, 04, 05, 06, 07]
     # [08, 09, 10, 11, 12, 13, 14, 15]
@@ -39,12 +39,9 @@ class Board:
     def player_owns_piece(self, index, player_number):
         return self.board[index].player_number == player_number
 
-    def _get_board_clone(self):
-        return deepcopy(self.board)
-
-    def _get_checker_row(self, index):
+    @staticmethod
+    def _get_checker_row(index):
         return index // 8
-
 
     def _is_valid_single_move(self, start, end):
 
@@ -60,6 +57,9 @@ class Board:
             return False
 
         start_piece = self.board[start]
+
+        if not start_piece:
+            return False
 
         # Verify movement directions are permitted
         if end-start > 0 and start_piece.type == Checker.PLAYER_ONE:
@@ -81,6 +81,9 @@ class Board:
         if dif in [14, 18]:
             midpoint = (start + end) // 2
             mid_piece = self.board[midpoint]
+
+            if not mid_piece:
+                return False
 
             # Prevent movement wrapping around the sides
             if abs(self._get_checker_row(start) - self._get_checker_row(end)) != 2:
@@ -115,22 +118,17 @@ class Board:
         checker.king()
 
     def move(self, move_list):
-        backup_board = self._get_board_clone()
-        backup_p1_checker_count = self.player_one_checker_count
-        backup_p2_checker_count = self.player_one_checker_count
+        backup_board = deepcopy(self.board)
+        backup_checker_counts = deepcopy(self.checker_counts)
         invalid_move_found = False
 
         for move_pair in move_list:
-            invalid_move_found = self._is_valid_single_move(move_pair[0], move_pair[1])
-            if invalid_move_found:
-                break
-            self._make_single_move(move_pair[0], move_pair[1])
-
-        if invalid_move_found:
-            self.board = backup_board
-            self.player_one_checker_count = backup_p1_checker_count
-            self.player_two_checker_count = backup_p2_checker_count
-            raise Exception
+            if self._is_valid_single_move(move_pair[0], move_pair[1]):
+                self._make_single_move(move_pair[0], move_pair[1])
+            else:
+                self.board = backup_board
+                self.checker_counts = backup_checker_counts
+                raise Exception
 
     def has_moves_left(self, player_num):
         if not self.checker_counts[player_num]:
@@ -138,7 +136,7 @@ class Board:
         has_move_left = False
 
         for idx, checker in enumerate(self.board):
-            if checker.player_number == player_num and self._get_valid_moves(idx):
+            if checker and checker.player_number == player_num and self._get_valid_moves(idx):
                 has_move_left = True
                 break
         return has_move_left
