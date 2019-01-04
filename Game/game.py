@@ -44,8 +44,9 @@ class Game:
         else:
             self.players_turn = self.players[0]
 
-    def has_player_won(self, player):
-        pass
+    def player_has_won(self, player):
+        opponent = self.get_opponent(player)
+        return not self.board.has_moves_left(self.players.index(opponent))
 
     def get_opponent(self, player):
         if player == self.players[0]:

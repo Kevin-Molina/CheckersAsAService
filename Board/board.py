@@ -17,8 +17,8 @@ class Board:
 
     def __init__(self):
         self.board = self._get_new_board()
-        self.player_one_checker_count = 12
-        self.player_two_checker_count = 12
+        self.checker_counts = {Checker.PLAYER_ONE: 12,
+                               Checker.PLAYER_TWO: 12}
 
     def _get_new_board(self):
         """Creates an empty board 3 rows at a time"""
@@ -121,11 +121,13 @@ class Board:
             self.player_two_checker_count = backup_p2_checker_count
             raise Exception
 
-    def _has_moves_left(self, checker_type):
+    def has_moves_left(self, player_num):
+        if not self.checker_counts[player_num]:
+            return False
         has_move_left = False
 
         for idx, checker in enumerate(self.board):
-            if checker.type == checker_type and self._get_valid_moves(idx):
+            if checker.player_number == player_num and self._get_valid_moves(idx):
                 has_move_left = True
                 break
         return has_move_left

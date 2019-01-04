@@ -40,9 +40,14 @@ class Messages:
              "firstMove": first_move}
         )
 
-
     @staticmethod
     def move(move):
         return json.dumps(
             {"move": move}
+        )
+
+    @staticmethod
+    def winnner(winner_name):
+        return json.dumps(
+            {"winner": winner_name}
         )

@@ -9,6 +9,8 @@ import logging
 
 
 class Server:
+    MSG_RECEIVED = 'RECEIVED: '
+    MSG_SENT = 'SENT '
     def __init__(self, ip, port, logfile):
         logging.basicConfig(format='%(asctime)s %(message)s',
                             datefmt='%m/%d/%Y %I:%M:%S %p',
@@ -19,9 +21,9 @@ class Server:
         self.ip = ip
         self.port = port
 
-    def listen(self, ip, port):
+    def listen(self):
         asyncio.get_event_loop().run_until_complete(
-            websockets.serve(self._dispatcher, ip, port))
+            websockets.serve(self._dispatcher, self.ip, self.port))
         asyncio.get_event_loop().run_forever()
 
     async def _dispatcher(self, websocket, path):
@@ -30,6 +32,7 @@ class Server:
         try:
             async for message in player.socket:
                 data = json.loads(message)
+                logging.info(self.MSG_RECEIVED + data)
 
                 if player.state == PlayerState.USERNAME_SELECTION:
 
@@ -93,7 +96,7 @@ class Server:
 
     async def _send(self, socket, msg):
         await socket.send(msg)
-        logging.info(msg)
+        logging.info(self.MSG_SENT + msg)
 
     async def send_valid_username(self, player):
         await self._send(player.socket, Messages.VALID_USERNAME)
@@ -117,6 +120,9 @@ class Server:
 
     async def send_move(self,player, move):
         await self._send(player.socket, Messages.move(move))
+
+    async def send_winner(self, player, winner_name):
+        await self._send(player.socket, Messages.winnner(winner_name))
 
     async def opponent_disconnected(self, player):
         player.state = PlayerState.IN_LOBBY
@@ -171,9 +177,15 @@ class Server:
             await self.send_invalid_move(player)
         else:
             opponent = game.get_opponent(player)
-            winner = game.get_winner_or_none()
             await self.send_move(opponent, move)
-            await self.send_valid_move(player)
+            if game.player_has_won(player):
+                await self.send_winner(player, player.name)
+                await self.send_winner(opponent, player.name)
+                player.state = PlayerState.IN_LOBBY
+                opponent.state = PlayerState.IN_LOBBY
+            else:
+                await self.send_valid_move(player)
+
 
 
 
