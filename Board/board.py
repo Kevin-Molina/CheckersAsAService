@@ -3,7 +3,7 @@ from copy import deepcopy
 
 
 class Board:
-    PLAYER_ONE_ROW_STARTS = [0, 9, 18]
+    PLAYER_ONE_ROW_STARTS = [0, 9, 16]
     PLAYER_TWO_ROW_STARTS = [41, 48, 57]
 
     # [00, 01, 02, 03, 04, 05, 06, 07]
@@ -96,15 +96,12 @@ class Board:
             self.board[midpoint] = None
             self.board[start] = None
 
-        self._king_if_needed(end)
+        if 0 >= end <= 7 or 56 >= end <= 63:
+            self._king(end)
 
-    def _king_if_needed(self, piece_index):
+    def _king(self, piece_index):
         checker = self.board[piece_index]
-
-        if 0 >= piece_index <= 7 and checker.type == Checker.PLAYER_ONE:
-            checker.king()
-        elif 56 >= piece_index <= 63 and checker.type == Checker.PLAYER_TWO:
-            checker.king()
+        checker.king()
 
     def move(self, move_list):
         backup_board = self._get_board_clone()

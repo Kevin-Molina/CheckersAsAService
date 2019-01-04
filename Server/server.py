@@ -9,19 +9,17 @@ import logging
 
 
 class Server:
-    LOGFILE = 'log.txt'
-
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, logfile):
         logging.basicConfig(format='%(asctime)s %(message)s',
                             datefmt='%m/%d/%Y %I:%M:%S %p',
                             level=logging.INFO,
-                            filename=self.LOGFILE)
+                            filename=logfile)
         self._players = {}
         self._queue = None
         self.ip = ip
         self.port = port
 
-    def run(self, ip, port):
+    def listen(self, ip, port):
         asyncio.get_event_loop().run_until_complete(
             websockets.serve(self._dispatcher, ip, port))
         asyncio.get_event_loop().run_forever()
